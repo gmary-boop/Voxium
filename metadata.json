@@ -1,0 +1,8 @@
+{
+  "name": "Voxium",
+  "description": "Voxium is an elegant hybrid social platform merging short-form interactive media with real-time community threads, featuring a custom Express backend and an AI-driven simulated feed engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
