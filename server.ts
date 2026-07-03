@@ -6,10 +6,12 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
 // ESM path resolution
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
+// ESM path resolution
+const __dirname = process.cwd();
 const app = express();
+
+
 const PORT = 3000;
 
 app.use(express.json());
