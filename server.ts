@@ -14,7 +14,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 // Path to persistent storage
 const DB_FILE = path.join(process.cwd(), "data_store.json");
@@ -322,7 +322,7 @@ function writeDB(state: DBState): void {
 
 // Authentication/Registration Simulated
 app.post("/api/auth/register", (req, res) => {
-  const { username, displayName, bio, avatar } = req.body;
+  const { username, displayName, bio, avatar, banner } = req.body;
   const db = readDB();
   
   const cleanUsername = (username || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
@@ -337,7 +337,7 @@ app.post("/api/auth/register", (req, res) => {
     displayName: displayName || `Usuario Voxium`,
     avatar: avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
     bio: bio || "¡Nuevo en la plataforma Voxium! 🌟",
-    banner: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800",
+    banner: banner || "",
     followersCount: 0,
     followingCount: 0,
     isVerified: false,
@@ -352,7 +352,30 @@ app.post("/api/auth/register", (req, res) => {
   writeDB(db);
   res.json(newUser);
 });
+// Update current user profile
+app.post("/api/users/user_current", (req, res) => {
+  const db = readDB();
+  const currentUser = db.users["user_current"];
 
+  if (!currentUser) {
+    return res.status(404).json({ error: "Usuario no encontrado" });
+  }
+
+  const { username, displayName, bio, avatar, banner } = req.body;
+
+  const updatedUser = {
+    ...currentUser,
+    username: username || currentUser.username,
+    displayName: displayName || currentUser.displayName,
+    bio: bio ?? currentUser.bio,
+    avatar: avatar || currentUser.avatar,
+    banner: banner || currentUser.banner
+  };
+
+  db.users["user_current"] = updatedUser;
+  writeDB(db);
+  res.json(updatedUser);
+});
 // Follow User
 app.post("/api/users/:id/follow", (req, res) => {
   const { id } = req.params;
@@ -1205,7 +1228,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(Number(PORT), "0.0.0.0", () => {
     console.log(`Server running at http://0.0.0.0:${PORT}`);
     // Pre-generate some posts if first boot
     const db = readDB();

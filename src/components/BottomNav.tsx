@@ -2,7 +2,7 @@ import { Home, Film, PlusSquare, Bell, User, Search } from "lucide-react";
 import { motion } from "motion/react";
 
 interface BottomNavProps {
-  activeView: 'threads' | 'reels' | 'create' | 'activity' | 'profile' | 'search';
+  activeView: 'threads' | 'reels' | 'create' | 'activity' | 'profile' | 'search' | 'chat' | 'admin' | 'monetization' | 'mobile-setup';
   onViewChange: (view: 'threads' | 'reels' | 'create' | 'activity' | 'profile' | 'search') => void;
   unreadCount: number;
 }

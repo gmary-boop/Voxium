@@ -22,12 +22,12 @@ export default function App() {
   const [posts, setPosts] = useState<Post[]>([]);
    const [email, setEmail] = useState("");
    const [password, setPassword] = useState("");
-   const [comments, setComments] = useState<Comment[]>([]);  
+  const [comments, setComments] = useState<Record<string, Comment[]>>({});
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Post[]>([]);
-  
+  const [revealedPostIds, setRevealedPostIds] = useState<string[]>([]);
   // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [reportPostId, setReportPostId] = useState<string | null>(null);
@@ -41,24 +41,18 @@ export default function App() {
   const [regUsername, setRegUsername] = useState("");
   const [regDisplayName, setRegDisplayName] = useState("");
   const [regBio, setRegBio] = useState("");
-  const [regAvatar, setRegAvatar] = useState("");
-
-  // Content safety state: approved post IDs by user to reveal
-  const [revealedPostIds, setRevealedPostIds] = useState<string[]>([]);
+  const [regAvatar, setRegAvatar] = useState("");  
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regBanner, setRegBanner] = useState("")
+  
 
   // Fetch Current User Profile
    const handleLogin = (e: React.FormEvent) => {
   e.preventDefault();
 
-  if (
-    email === "gcarolinamary@gmail.com" &&
-    password === "05184033M7250!!"
-  ) {
-    alert("Login exitoso");
-  } else {
-    alert("Credenciales incorrectas");
-  }
-};
+  // Login pendiente. Se implementará con el nuevo sistema de autenticación.
+  }; 
   const fetchProfile = () => {
     fetch("/api/users/user_current")
       .then(r => r.json())
@@ -80,7 +74,7 @@ export default function App() {
         });
       });
   };
-
+  
   // Fetch Feed Posts
   const fetchFeed = () => {
     setLoadingFeed(true);
@@ -244,15 +238,16 @@ export default function App() {
     if (!regUsername.trim()) return;
 
     try {
-      const res = await fetch("/api/auth/register", {
+    const res = await fetch("/api/users/user_current", {  
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: regUsername,
           displayName: regDisplayName || regUsername,
           bio: regBio,
-          avatar: regAvatar
-        })
+         avatar: regAvatar,
+         banner: regBanner
+      }),
       });
       if (res.ok) {
         setShowVerifiedReg(false);
@@ -731,9 +726,9 @@ export default function App() {
                 <img
                   src={currentUser.banner}
                   alt="Banner"
-                  className="w-full h-32 object-cover"
+                  className="w-full h-56 object-cover bg-slate-950"
                 />
-                <div className="absolute -bottom-8 left-4">
+               <div className="absolute bottom-2 left-4">
                   <img
                     src={currentUser.avatar}
                     alt={currentUser.displayName}
@@ -742,7 +737,14 @@ export default function App() {
                   />
                 </div>
                 <button
-                  onClick={() => setShowVerifiedReg(true)}
+                  onClick={() => {
+  setRegUsername(currentUser?.username || "");
+  setRegDisplayName(currentUser?.displayName || "");
+  setRegBio(currentUser?.bio || "");
+  setRegAvatar(currentUser?.avatar || "");
+  setRegBanner(currentUser?.banner || "");
+  setShowVerifiedReg(true);
+}}
                   className="absolute right-4 bottom-4 text-[10px] font-bold bg-slate-950/80 hover:bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg cursor-pointer"
                 >
                   Editar Perfil / Registro
@@ -883,14 +885,49 @@ export default function App() {
                 <div>
                   <label className="block text-[10px] text-slate-400 mb-1">URL del Avatar / Foto:</label>
                   <input
-                    type="url"
-                    value={regAvatar}
-                    onChange={(e) => setRegAvatar(e.target.value)}
+                    type="file"
+                    
+                    onChange={(e) => {
+  const file = e.target.files?.[0];
+  if (file) {
+  const reader = new FileReader();
+  reader.onloadend = () => setRegAvatar(reader.result as string);
+  reader.readAsDataURL(file);
+}
+}}
                     placeholder={currentUser?.avatar || "https://images.unsplash.com/photo-..."}
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none"
                   />
                 </div>
-
+<div>
+  <label className="block text-[10px] text-slate-400 mb-1">
+    URL del Banner
+  </label>
+  <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setRegBanner(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  }
+}}
+    
+    
+  
+  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-300"
+/>
+   
+   
+   
+  
+   
+  
+</div>
                 <div className="flex gap-2 pt-1.5">
                   <button
                     type="button"
