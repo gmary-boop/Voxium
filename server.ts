@@ -129,10 +129,10 @@ interface DBState {
 const INITIAL_USERS: Record<string, User> = {
   "user_current": {
     id: "user_current",
-    username: "tu_perfil",
-    displayName: "Explorador de Voxium",
+    username: "voxium",
+    displayName: "VOXIUM OFICIAL",
     avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    bio: "¡Creador novato probando el poder de Voxium! 🚀",
+    bio: "La red social donde tus ideas se conectan, crean y cobran vida. 🚀 Bienvenido al futuro de la comunidad digital.",
     banner: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
     followersCount: 142,
     followingCount: 89,
